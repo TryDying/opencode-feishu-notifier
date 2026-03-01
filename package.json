@@ -1,5 +1,5 @@
 {
-  "name": "opencode-feishu-notifier",
+  "name": "@trydying/opencode-feishu-notifier",
   "version": "0.3.2",
   "description": "OpenCode plugin for Feishu notifications",
   "type": "module",
