@@ -107,6 +107,19 @@ gh api --method PUT /user/starred/Thrimbda/opencode-feishu-notifier
 }
 ```
 
+也支持将 `appId` 和 `appSecret` 写成环境变量占位符（变量名可自定义）：
+
+```json
+{
+  "appId": "${FEISHU_CUSTOM_APP_ID}",
+  "appSecret": "${FEISHU_CUSTOM_APP_SECRET}",
+  "receiverType": "user_id",
+  "receiverId": "your_user_id"
+}
+```
+
+当配置使用 `${ENV_NAME}` 格式时，插件会在启动时读取对应环境变量；如果变量未设置会报错。
+
 ### 2. OpenCode 插件配置
 
 在 `~/.config/opencode/opencode.json` 中启用插件：

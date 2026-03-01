@@ -54,6 +54,36 @@ function readConfigFile(filePath: string): Partial<FeishuConfig> | null {
   }
 }
 
+function resolveEnvPlaceholder(value: string | undefined, fieldName: keyof FeishuConfig): string | undefined {
+  if (!value) {
+    return value
+  }
+
+  const envReferenceMatch = value.match(/^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$/)
+  if (!envReferenceMatch) {
+    return value
+  }
+
+  const envName = envReferenceMatch[1]
+  const envValue = process.env[envName]
+
+  if (!envValue) {
+    throw new Error(
+      `Config field ${fieldName} references environment variable ${envName}, but it is not set.`
+    )
+  }
+
+  return envValue
+}
+
+function resolveConfigPlaceholders(config: Partial<FeishuConfig>): Partial<FeishuConfig> {
+  return {
+    ...config,
+    appId: resolveEnvPlaceholder(config.appId, "appId"),
+    appSecret: resolveEnvPlaceholder(config.appSecret, "appSecret")
+  }
+}
+
 function readEnvConfig(): Partial<FeishuConfig> {
   return {
     appId: process.env.FEISHU_APP_ID,
@@ -74,9 +104,10 @@ function resolveConfig(options: LoadConfigOptions): {
   for (const configPath of configPaths) {
     const config = readConfigFile(configPath)
     if (config) {
+      const resolvedConfig = resolveConfigPlaceholders(config)
       mergedConfig = {
         ...mergedConfig,
-        ...config
+        ...resolvedConfig
       }
       sources.push({ type: "file", detail: configPath })
     }
