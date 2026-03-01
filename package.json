@@ -1,6 +1,6 @@
 {
   "name": "@trydying/opencode-feishu-notifier",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "OpenCode plugin for Feishu notifications",
   "type": "module",
   "main": "src/index.ts",
