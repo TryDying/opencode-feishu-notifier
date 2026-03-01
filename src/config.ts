@@ -80,7 +80,11 @@ function resolveConfigPlaceholders(config: Partial<FeishuConfig>): Partial<Feish
   return {
     ...config,
     appId: resolveEnvPlaceholder(config.appId, "appId"),
-    appSecret: resolveEnvPlaceholder(config.appSecret, "appSecret")
+    appSecret: resolveEnvPlaceholder(config.appSecret, "appSecret"),
+    receiverType: resolveEnvPlaceholder(config.receiverType, "receiverType") as
+      | ReceiverType
+      | undefined,
+    receiverId: resolveEnvPlaceholder(config.receiverId, "receiverId")
   }
 }
 
