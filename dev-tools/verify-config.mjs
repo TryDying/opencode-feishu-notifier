@@ -63,11 +63,9 @@ console.log("  ✓ No incorrect nesting\n")
 // Validate required fields
 const required = ["appId", "appSecret", "receiverType", "receiverId"]
 const missing = []
-const present = []
 
 for (const field of required) {
   if (config[field]) {
-    present.push(field)
     console.log(`  ✓ ${field}: ${maskValue(field, config[field])}`)
   } else {
     missing.push(field)
@@ -88,6 +86,9 @@ if (missing.length > 0) {
   }, null, 2))
   process.exit(1)
 }
+
+validatePlaceholder("appId", config.appId)
+validatePlaceholder("appSecret", config.appSecret)
 
 // Validate receiverType
 const validTypes = ["user_id", "open_id", "chat_id"]
@@ -111,12 +112,40 @@ console.log("\n🎯 Next step:")
 console.log("  Restart OpenCode to load the configuration")
 console.log("  Expected log: 'Loaded Feishu config'")
 
+function validatePlaceholder(field, value) {
+  const placeholderMatch = value.match(/^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$/)
+  if (!placeholderMatch) {
+    return
+  }
+
+  const envName = placeholderMatch[1]
+  if (!process.env[envName]) {
+    console.error(`❌ ${field} uses placeholder ${value}, but env ${envName} is not set`)
+    process.exit(1)
+  }
+
+  console.log(`✓ ${field} placeholder resolved from env ${envName}`)
+}
+
 function maskValue(field, value) {
+  const placeholderMatch = value.match(/^\$\{([A-Za-z_][A-Za-z0-9_]*)\}$/)
+  if (placeholderMatch) {
+    return value
+  }
+
   if (field === "appSecret") {
+    if (value.length <= 8) {
+      return "****"
+    }
     return value.slice(0, 4) + "****" + value.slice(-4)
   }
+
   if (field === "appId" || field === "receiverId") {
+    if (value.length <= 8) {
+      return value.slice(0, 2) + "****"
+    }
     return value.slice(0, 8) + "****"
   }
+
   return value
 }
