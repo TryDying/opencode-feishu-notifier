@@ -86,12 +86,9 @@ gh api --method PUT /user/starred/Thrimbda/opencode-feishu-notifier
 
 ## 支持的事件
 
-- **会话闲置** (`session.status` with `idle`) - OpenCode 等待用户输入
 - **权限请求** (`permission.asked`) - 需要用户授权文件访问
 - **用户选择** (`question.asked`) - 需要用户选择方案
-- **交互式输入** (`tui.prompt.append`) - 需要用户输入
-- **命令参数** (`tui.command.execute`) - 需要提供命令参数
-- **确认提示** (`tui.toast.show`) - 需要用户确认
+- **消息完成/终止** (`session.status` with `idle`，兼容 `message.completed` / `message.failed` / `message.errored`) - OpenCode 回复结束（包括错误后终止）
 
 详细事件说明请查看 [docs/NEW_EVENTS.md](docs/NEW_EVENTS.md)
 

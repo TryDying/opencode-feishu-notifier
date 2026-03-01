@@ -2,7 +2,7 @@ import type { Plugin } from "@opencode-ai/plugin";
 import { loadConfigWithSource } from "./config";
 import { sendTextMessage, sendRichTextMessage } from "./feishu/client";
 import { buildNotification, recordEventContext } from "./feishu/messages";
-import { mapEventToNotification } from "./hooks";
+import { mapCompletionEventToNotification, mapEventToNotification } from "./hooks";
 
 const serviceName = "opencode-feishu-notifier";
 
@@ -62,16 +62,8 @@ const FeishuNotifierPlugin: Plugin = async ({ client, directory }) => {
       recordEventContext(event);
       logDebug("Event received", { eventType: event.type });
 
-      // Check for session.status with idle state
       let notificationType = mapEventToNotification(event.type);
-
-      // Special handling for session.status events
-      if (
-        event.type === "session.status" &&
-        event.properties?.status?.type === "idle"
-      ) {
-        notificationType = "session_idle";
-      }
+      notificationType = notificationType ?? mapCompletionEventToNotification(event);
 
       if (!notificationType) {
         logDebug("Event ignored", { eventType: event.type });
